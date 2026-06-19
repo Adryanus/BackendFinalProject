@@ -1,11 +1,11 @@
 package com.inventory.inventory.service;
 
+import com.inventory.inventory.exception.RecursoNoEncontradoException;
 import com.inventory.inventory.model.Articulo;
 import com.inventory.inventory.repository.ArticuloRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ArticuloService {
@@ -20,8 +20,12 @@ public class ArticuloService {
         return repository.findAll();
     }
 
-    public Optional<Articulo> obtenerPorId(Long id) {
-        return repository.findById(id);
+    public Articulo buscarPorId(Long id) {
+
+        return repository.findById(id)
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException(
+                                "No existe un artículo con ID " + id));
     }
 
     public Articulo guardar(Articulo articulo) {

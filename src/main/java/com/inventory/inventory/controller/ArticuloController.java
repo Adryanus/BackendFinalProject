@@ -2,12 +2,13 @@ package com.inventory.inventory.controller;
 
 import com.inventory.inventory.model.Articulo;
 import com.inventory.inventory.service.ArticuloService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.http.ResponseEntity;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/articulos")
@@ -28,24 +29,23 @@ public class ArticuloController {
     public ResponseEntity<Articulo> buscarPorId(
             @PathVariable Long id) {
 
-        return service.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(
+                service.buscarPorId(id));
     }
 
     @PostMapping
-    public Articulo crear(@Valid @RequestBody Articulo articulo) {
+    public Articulo crear(
+            @Valid @RequestBody Articulo articulo) {
+
         return service.guardar(articulo);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Articulo> actualizar(
-        @PathVariable Long id,
-        @Valid @RequestBody Articulo articulo) {
+            @PathVariable Long id,
+            @Valid @RequestBody Articulo articulo) {
 
-        if (service.obtenerPorId(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        service.buscarPorId(id);
 
         articulo.setId(id);
 
@@ -57,9 +57,7 @@ public class ArticuloController {
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id) {
 
-        if (service.obtenerPorId(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        service.buscarPorId(id);
 
         service.eliminar(id);
 

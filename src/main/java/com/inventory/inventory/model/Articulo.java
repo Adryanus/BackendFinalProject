@@ -1,14 +1,7 @@
 package com.inventory.inventory.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "articulos")
@@ -18,15 +11,31 @@ public class Articulo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-     @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(
+        min = 3,
+        max = 50,
+        message = "El nombre debe tener entre 3 y 50 caracteres"
+    )
+    @Pattern(
+        regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
+        message = "El nombre contiene caracteres inválidos"
+    )
     private String nombre;
 
     @Positive(message = "El precio debe ser mayor que cero")
+    @Max(
+        value = 100000000,
+        message = "El precio supera el máximo permitido"
+    )
     private double precio;
 
     @PositiveOrZero(message = "El stock no puede ser negativo")
+    @Max(
+        value = 100000,
+        message = "El stock supera el máximo permitido"
+    )
     private int stock;
-
 
     public Articulo() {
     }
