@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.inventory.inventory.dto.ArticuloRequest;
+import com.inventory.inventory.dto.ArticuloResponse;
+
 @RestController
 @RequestMapping("/articulos")
 public class ArticuloController {
@@ -21,36 +27,42 @@ public class ArticuloController {
     }
 
     @GetMapping
-    public List<Articulo> listar() {
+    public List<ArticuloResponse> listar() {
         return service.obtenerTodos();
     }
 
+    @GetMapping("/pagina")
+    public Page<ArticuloResponse> listarPaginado(
+            Pageable pageable) {
+
+        return service.obtenerPaginadosResponse(
+                pageable);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Articulo> buscarPorId(
+    public ResponseEntity<ArticuloResponse> buscarPorId(
             @PathVariable Long id) {
 
         return ResponseEntity.ok(
-                service.buscarPorId(id));
+                service.obtenerResponsePorId(id));
     }
 
     @PostMapping
     public Articulo crear(
-            @Valid @RequestBody Articulo articulo) {
+            @Valid @RequestBody ArticuloRequest request) {
 
-        return service.guardar(articulo);
+        return service.crear(request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Articulo> actualizar(
+    public ResponseEntity<ArticuloResponse> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody Articulo articulo) {
-
-        service.buscarPorId(id);
-
-        articulo.setId(id);
+            @Valid @RequestBody ArticuloRequest request) {
 
         return ResponseEntity.ok(
-                service.guardar(articulo));
+                service.actualizar(
+                        id,
+                        request));
     }
 
     @DeleteMapping("/{id}")
@@ -62,5 +74,12 @@ public class ArticuloController {
         service.eliminar(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buscar")
+    public List<Articulo> buscarPorNombre(
+            @RequestParam String nombre) {
+
+        return service.buscarPorNombre(nombre);
     }
 }

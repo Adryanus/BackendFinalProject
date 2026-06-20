@@ -37,22 +37,27 @@ public class Articulo {
     )
     private int stock;
 
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+
     public Articulo() {
     }
 
-    public Articulo(Long id, String nombre, double precio, int stock) {
+    public Articulo(Long id,
+                    String nombre,
+                    double precio,
+                    int stock,
+                    Categoria categoria) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
+        this.categoria = categoria;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNombre() {
@@ -77,5 +82,17 @@ public class Articulo {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
