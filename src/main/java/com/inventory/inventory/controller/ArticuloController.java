@@ -1,20 +1,18 @@
 package com.inventory.inventory.controller;
 
+import com.inventory.inventory.dto.ArticuloRequest;
+import com.inventory.inventory.dto.ArticuloResponse;
 import com.inventory.inventory.model.Articulo;
 import com.inventory.inventory.service.ArticuloService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import com.inventory.inventory.dto.ArticuloRequest;
-import com.inventory.inventory.dto.ArticuloResponse;
 
 @RestController
 @RequestMapping("/articulos")
@@ -28,6 +26,7 @@ public class ArticuloController {
 
     @GetMapping
     public List<ArticuloResponse> listar() {
+
         return service.obtenerTodos();
     }
 
@@ -60,9 +59,16 @@ public class ArticuloController {
             @Valid @RequestBody ArticuloRequest request) {
 
         return ResponseEntity.ok(
-                service.actualizar(
-                        id,
-                        request));
+                service.actualizar(id, request));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ArticuloResponse> actualizarParcial(
+            @PathVariable Long id,
+            @RequestBody ArticuloRequest request) {
+
+        return ResponseEntity.ok(
+                service.actualizarParcial(id, request));
     }
 
     @DeleteMapping("/{id}")

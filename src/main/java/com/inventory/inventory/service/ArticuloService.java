@@ -1,17 +1,16 @@
 package com.inventory.inventory.service;
 
 import com.inventory.inventory.dto.ArticuloRequest;
+import com.inventory.inventory.dto.ArticuloResponse;
 import com.inventory.inventory.exception.RecursoNoEncontradoException;
 import com.inventory.inventory.model.Articulo;
 import com.inventory.inventory.model.Categoria;
 import com.inventory.inventory.repository.ArticuloRepository;
 import com.inventory.inventory.repository.CategoriaRepository;
 
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import com.inventory.inventory.dto.ArticuloResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -40,41 +39,124 @@ public class ArticuloService {
     public Articulo buscarPorId(Long id) {
 
         return repository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe un artículo con ID " + id));
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException(
+                                "No existe un artículo con ID " + id));
     }
 
-    public Articulo guardar(Articulo articulo) {
-        return repository.save(articulo);
+    public ArticuloResponse obtenerResponsePorId(Long id) {
+
+        return convertirAResponse(
+                buscarPorId(id));
     }
 
     public Articulo crear(ArticuloRequest request) {
 
-        Categoria categoria = categoriaRepository.findById(
-                request.getCategoriaId())
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe una categoría con ID "
-                                + request.getCategoriaId()));
+        Categoria categoria =
+                categoriaRepository.findById(
+                        request.getCategoriaId())
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException(
+                                "No existe una categoría con ID "
+                                        + request.getCategoriaId()));
 
         Articulo articulo = new Articulo();
 
-        articulo.setNombre(
-                request.getNombre());
+        articulo.setNombre(request.getNombre());
+        articulo.setPrecio(request.getPrecio());
+        articulo.setStock(request.getStock());
+        articulo.setCategoria(categoria);
 
-        articulo.setPrecio(
-                request.getPrecio());
+        return repository.save(articulo);
+    }
 
-        articulo.setStock(
-                request.getStock());
+    // ==========================
+    // PUT
+    // ==========================
 
-        articulo.setCategoria(
-                categoria);
+    public ArticuloResponse actualizar(
+            Long id,
+            ArticuloRequest request) {
 
-        return repository.save(
-                articulo);
+        Articulo articulo = buscarPorId(id);
+
+        copiarCampos(
+                articulo,
+                request,
+                false);
+
+        return convertirAResponse(
+                repository.save(articulo));
+    }
+
+    // ==========================
+    // PATCH
+    // ==========================
+
+    public ArticuloResponse actualizarParcial(
+            Long id,
+            ArticuloRequest request) {
+
+        Articulo articulo = buscarPorId(id);
+
+        copiarCampos(
+                articulo,
+                request,
+                true);
+
+        return convertirAResponse(
+                repository.save(articulo));
+    }
+
+    // ==========================
+    // Método compartido
+    // ==========================
+
+    private void copiarCampos(
+            Articulo articulo,
+            ArticuloRequest request,
+            boolean parcial) {
+
+        if (!parcial ||
+                (request.getNombre() != null
+                        && !request.getNombre().isBlank())) {
+
+            articulo.setNombre(
+                    request.getNombre());
+        }
+
+        if (!parcial ||
+                request.getPrecio() != null) {
+
+            articulo.setPrecio(
+                    request.getPrecio());
+        }
+
+        if (!parcial ||
+                request.getStock() != null) {
+
+            articulo.setStock(
+                    request.getStock());
+        }
+
+        if (!parcial ||
+                request.getCategoriaId() != null) {
+
+            Categoria categoria =
+                    categoriaRepository.findById(
+                            request.getCategoriaId())
+                    .orElseThrow(() ->
+                            new RecursoNoEncontradoException(
+                                    "No existe una categoría con ID "
+                                            + request.getCategoriaId()));
+
+            articulo.setCategoria(
+                    categoria);
+        }
     }
 
     public void eliminar(Long id) {
+
         repository.deleteById(id);
     }
 
@@ -86,16 +168,18 @@ public class ArticuloService {
                         nombre);
     }
 
-    public Page<Articulo> obtenerPaginados(
+    public Page<ArticuloResponse> obtenerPaginadosResponse(
             Pageable pageable) {
 
-        return repository.findAll(pageable);
+        return repository.findAll(pageable)
+                .map(this::convertirAResponse);
     }
 
     private ArticuloResponse convertirAResponse(
             Articulo articulo) {
 
-        ArticuloResponse response = new ArticuloResponse();
+        ArticuloResponse response =
+                new ArticuloResponse();
 
         response.setId(
                 articulo.getId());
@@ -119,51 +203,5 @@ public class ArticuloService {
         }
 
         return response;
-    }
-
-    public ArticuloResponse obtenerResponsePorId(
-            Long id) {
-
-        Articulo articulo = buscarPorId(id);
-
-        return convertirAResponse(
-                articulo);
-    }
-
-    public Page<ArticuloResponse> obtenerPaginadosResponse(
-            Pageable pageable) {
-
-        return repository.findAll(pageable)
-                .map(this::convertirAResponse);
-    }
-
-    public ArticuloResponse actualizar(
-            Long id,
-            ArticuloRequest request) {
-
-        Articulo articulo = buscarPorId(id);
-
-        Categoria categoria = categoriaRepository.findById(
-                request.getCategoriaId())
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe una categoría con ID "
-                                + request.getCategoriaId()));
-
-        articulo.setNombre(
-                request.getNombre());
-
-        articulo.setPrecio(
-                request.getPrecio());
-
-        articulo.setStock(
-                request.getStock());
-
-        articulo.setCategoria(
-                categoria);
-
-        Articulo actualizado = repository.save(articulo);
-
-        return convertirAResponse(
-                actualizado);
     }
 }

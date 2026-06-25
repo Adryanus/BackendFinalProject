@@ -1,17 +1,22 @@
 package com.inventory.inventory.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class ArticuloRequest {
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
+    @NotNull(message = "El precio es obligatorio")
     @Positive(message = "El precio debe ser mayor que cero")
-    private double precio;
+    private Double precio;
 
+    @NotNull(message = "El stock es obligatorio")
     @PositiveOrZero(message = "El stock no puede ser negativo")
-    private int stock;
+    private Integer stock;
 
     @NotNull(message = "La categoría es obligatoria")
     private Long categoriaId;
@@ -24,19 +29,19 @@ public class ArticuloRequest {
         this.nombre = nombre;
     }
 
-    public double getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
-    public int getStock() {
+    public Integer getStock() {
         return stock;
     }
 
-    public void setStock(int stock) {
+    public void setStock(Integer stock) {
         this.stock = stock;
     }
 
