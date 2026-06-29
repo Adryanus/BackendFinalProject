@@ -10,21 +10,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaController {
 
     private final CategoriaService service;
 
-    public CategoriaController(
-            CategoriaService service) {
-
+    public CategoriaController(CategoriaService service) {
         this.service = service;
     }
 
     @GetMapping
     public List<Categoria> listar() {
-
         return service.obtenerTodas();
     }
 
@@ -50,7 +48,6 @@ public class CategoriaController {
             @PathVariable Long id) {
 
         if (service.obtenerPorId(id).isEmpty()) {
-
             return ResponseEntity.notFound().build();
         }
 

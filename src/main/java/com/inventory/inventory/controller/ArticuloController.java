@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/articulos")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ArticuloController {
 
     private final ArticuloService service;
