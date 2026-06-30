@@ -37,10 +37,18 @@ public class CategoriaController {
 
     @PostMapping
     public Categoria crear(
-            @Valid
-            @RequestBody Categoria categoria) {
+            @Valid @RequestBody Categoria categoria) {
 
         return service.guardar(categoria);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Categoria> actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody Categoria categoria) {
+
+        return ResponseEntity.ok(
+                service.actualizar(id, categoria));
     }
 
     @DeleteMapping("/{id}")
